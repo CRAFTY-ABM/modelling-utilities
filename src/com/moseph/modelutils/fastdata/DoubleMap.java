@@ -1,7 +1,32 @@
+ /**
+ * This file is part of
+ * 
+ * ModellingUtilities
+ *
+ * Copyright (C) 2014 School of GeoScience, University of Edinburgh, Edinburgh, UK
+ * 
+ * ModellingUtilities is free software: You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *  
+ * ModellingUtilities is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * School of Geoscience, University of Edinburgh, Edinburgh, UK
+ * 
+ */
 package com.moseph.modelutils.fastdata;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /**
@@ -44,10 +69,12 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 	public DoubleMap( IndexSet<T> indexes, double...values)
 	{
 		this( indexes, 0 );
-		if( values.length != data.length )
+		if( values.length != data.length ) {
 			throw new RuntimeException("Wrong size array given to DoubleMap. Expecting "+ data.length+" got " + values.length);
-		for( T t : indexes )
+		}
+		for( T t : indexes ) {
 			data[t.getIndex()] = values[t.getIndex()];
+		}
 	}
 	
 	public double get( T key )
@@ -68,8 +95,9 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public void put( double[] values )
 	{
-		if( values.length != data.length )
+		if( values.length != data.length ) {
 			throw new RuntimeException("Wrong length array passed to DoubleMap. Got " + values.length + " expected " + data.length);
+		}
 		System.arraycopy( values, 0, data, 0, data.length );
 	}
 	
@@ -84,6 +112,7 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 		dirty();
 	}
 	
+	@Override
 	public void clear()
 	{
 		Arrays.fill( data, initial );
@@ -93,33 +122,51 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public double getTotal()
 	{
-		if( dirtyTotal ) updateTotals();
+		if( dirtyTotal ) {
+			updateTotals();
+		}
 		return total;
 	}
 	
+	@Override
 	void updateTotals()
 	{
 		total = 0;
-		for( double v : data ) total += v;
+		for( double v : data ) {
+			total += v;
+		}
 		dirtyTotal = false;
 	}
 	
+	@Override
 	void updateAverage()
 	{
-		average = (double)getTotal() / size();
+		average = getTotal() / size();
 	}
 	
 	
+	/**
+	 * TODO check if LinkedHashMap required
+	 * 
+	 * @see com.moseph.modelutils.fastdata.UnmodifiableNumberMap#toMap()
+	 */
+	@Override
 	public Map<T, Double> toMap()
 	{
-		Map<T, Double> map =new HashMap<T, Double>();
-		for( T k : getKeys() ) map.put( k, get(k) );
+		Map<T, Double> map = new LinkedHashMap<T, Double>();
+		for( T k : getKeys() ) {
+			map.put( k, get(k) );
+		}
 		return map;
 	}
 	
+	@Override
 	public void addDouble( T key, double value ) { add( key, value ); }
+	@Override
 	public double getDouble( T key ) { return get( key ); }
+	@Override
 	public void putDouble( T key, double value ) { put( key, value ); }
+	@Override
 	public double getDoubleTotal() { return getTotal(); }
 	
 	/**
@@ -140,8 +187,9 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public void setMin( double value )
 	{
-		for( int i = 0; i < data.length; i++ )
+		for( int i = 0; i < data.length; i++ ) {
 			data[i] = Math.max( value, data[i] );
+		}
 	}
 	
 }

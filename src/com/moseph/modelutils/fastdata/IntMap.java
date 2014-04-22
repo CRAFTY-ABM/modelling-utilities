@@ -1,6 +1,31 @@
+ /**
+ * This file is part of
+ * 
+ * ModellingUtilities
+ *
+ * Copyright (C) 2014 School of GeoScience, University of Edinburgh, Edinburgh, UK
+ * 
+ * ModellingUtilities is free software: You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *  
+ * ModellingUtilities is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * School of Geoscience, University of Edinburgh, Edinburgh, UK
+ * 
+ */
 package com.moseph.modelutils.fastdata;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Intended to form a Map-like structure for storing ints, which avoides autoboxing
@@ -53,6 +78,7 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 		dirty();
 	}
 	
+	@Override
 	public void clear()
 	{
 		Arrays.fill( data, initial );
@@ -62,17 +88,23 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public int getTotal()
 	{
-		if( dirtyTotal ) updateTotals();
+		if( dirtyTotal ) {
+			updateTotals();
+		}
 		return total;
 	}
 	
+	@Override
 	void updateTotals()
 	{
 		total = 0;
-		for( int v : data ) total += v;
+		for( int v : data ) {
+			total += v;
+		}
 		dirtyTotal = false;
 	}
 	
+	@Override
 	void updateAverage()
 	{
 		average = (double)getTotal() / size();
@@ -80,7 +112,9 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public void copyInto( IntMap<T> target )
 	{
-		for( T k : indexes ) target.put(k, data[k.getIndex()] );
+		for( T k : indexes ) {
+			target.put(k, data[k.getIndex()] );
+		}
 	}
 	
 	public void copyFrom( IntMap<T> source )
@@ -90,9 +124,12 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	
 	public void addInto( IntMap<T> target )
 	{
-		for( T k : indexes ) target.add(k, data[k.getIndex()] );
+		for( T k : indexes ) {
+			target.add(k, data[k.getIndex()] );
+		}
 	}
 	
+	@Override
 	public T sample()
 	{
 		//int num = nextIntFromTo( 0, getTotal()-1 );
@@ -101,7 +138,9 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 		for( T k : getKeys() )
 		{
 			cur += get( k );
-			if( cur > num ) return k;
+			if( cur > num ) {
+				return k;
+			}
 		}
 		return null;
 	}
@@ -109,19 +148,26 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	public T consume()
 	{
 		T val = sample();
-		if( val != null ) add( val, -1 );
+		if( val != null ) {
+			add( val, -1 );
+		}
 		return val;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return toMap().toString();
 	}
 	
+	@Override
 	public Map<T, Integer> toMap()
 	{
-		Map<T, Integer> map =new HashMap<T, Integer>();
-		for( T k : getKeys() ) map.put( k, get(k) );
+		// TODO check if LinkedHashMap required
+		Map<T, Integer> map = new LinkedHashMap<T, Integer>();
+		for( T k : getKeys() ) {
+			map.put( k, get(k) );
+		}
 		return map;
 	}
 
@@ -143,9 +189,9 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 		put( key, (int)value );
 	}
 
+	@Override
 	public double getDoubleTotal()
 	{
 		return getTotal();
 	}
-
 }
