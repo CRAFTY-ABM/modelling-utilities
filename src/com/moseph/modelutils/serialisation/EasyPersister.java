@@ -1,23 +1,57 @@
+ /**
+ * This file is part of
+ * 
+ * ModellingUtilities
+ *
+ * Copyright (C) 2014 School of GeoScience, University of Edinburgh, Edinburgh, UK
+ * 
+ * ModellingUtilities is free software: You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *  
+ * ModellingUtilities is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * School of Geoscience, University of Edinburgh, Edinburgh, UK
+ * 
+ */
 package com.moseph.modelutils.serialisation;
 
-import java.io.*;
-
-
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.InputNode;
 
-//import com.csvreader.CsvReader;
 import com.csvreader.CsvReader;
-import com.google.common.collect.*;
-
-import com.moseph.gis.raster.*;
-import com.moseph.modelutils.curve.*;
-import com.moseph.modelutils.fastdata.*;
-import com.moseph.modelutils.serialisation.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
+import com.moseph.gis.raster.Raster;
+import com.moseph.gis.raster.RasterReader;
+import com.moseph.modelutils.curve.LinearInterpolator;
+import com.moseph.modelutils.fastdata.DoubleMap;
+import com.moseph.modelutils.fastdata.DoubleMatrix;
+import com.moseph.modelutils.fastdata.Indexed;
+import com.moseph.modelutils.fastdata.Named;
+import com.moseph.modelutils.fastdata.NamedIndexSet;
 
 /**
  * Class to deal with persistence for the general models. Lets base directories
@@ -40,7 +74,8 @@ public class EasyPersister extends Persister
 {
 	ClassLoader classLoader; //The classloader to use
 	String baseDir = null; //File loading is relative to this path
-	String tmpDir = "./tmp/"; //Temp files for serialisation are stored here
+	String tmpDir = "./test-data/tmp/"; // Temp files for serialisation are
+										// stored here
 	Logger log = Logger.getLogger( getClass()  ); //Logger
 	Map<String, String> context = new HashMap<String, String>();
 	
@@ -78,7 +113,9 @@ public class EasyPersister extends Persister
 	public String getFullPath( String path, String baseDir, Map<String,String> extra )
 	{
 		path = contextualise( path, extra );
-		if( baseDir != null ) return contextualise( baseDir, extra ) + "/" + path;
+		if( baseDir != null ) {
+			return contextualise( baseDir, extra ) + "/" + path;
+		}
 		return path;
 	}
 	
@@ -95,12 +132,16 @@ public class EasyPersister extends Persister
 	{
 		String opDirName = getFullPath( directory, baseDir, extra );
 		File opDir = new File( opDirName );
-		if( ! isDirectory ) opDir = opDir.getParentFile();
+		if( ! isDirectory ) {
+			opDir = opDir.getParentFile();
+		}
 		try
 		{
-			if( ! opDir.exists() ) 
-				if( !opDir.mkdirs() )
+			if( ! opDir.exists() ) {
+				if( !opDir.mkdirs() ) {
 					log.fatal( "Couldn't make output directory - not sure why (" + opDir.getAbsolutePath() + ")" );
+				}
+			}
 		} catch( Exception e ) { log.fatal( "Couldn't make output directory: " + e ); }
 		return opDirName;
 	}
@@ -118,7 +159,9 @@ public class EasyPersister extends Persister
 	 */
 	public static Set<String> splitTags( String field )
 	{
-		if( field == null ) return new HashSet<String>();
+		if( field == null ) {
+			return new HashSet<String>();
+		}
 		return new HashSet<String>( Arrays.asList( field.split( "\\s*[,;]\\s*" ) ) );
 	}
 
@@ -228,15 +271,22 @@ public class EasyPersister extends Persister
 	 */
 	public boolean csvFileOK( String caller, String filename, boolean checkRequiredNotNull, Collection<String> requiredFields )
 	{
-		if( filename == null ) return false;
-		if( filename.length() == 0 ) return false;
+		if( filename == null ) {
+			return false;
+		}
+		if( filename.length() == 0 ) {
+			return false;
+		}
 		File f = new File( getFullPath( filename ));
 		String abs = f.getAbsolutePath();
 		List<String> req = new ArrayList<String>( requiredFields );
 		if( ! checkRequiredNotNull )
 		{
-			for( String s : requiredFields ) if( s == null || s.length() == 0 )
-				log.fatal( "Missing required field for " + caller + " opening " + abs + ": " + req );
+			for( String s : requiredFields ) {
+				if( s == null || s.length() == 0 ) {
+					log.fatal( "Missing required field for " + caller + " opening " + abs + ": " + req );
+				}
+			}
 		}
 		if( ! f.exists() )
 		{
@@ -276,7 +326,9 @@ public class EasyPersister extends Persister
 	public CsvReader getCSVReader( String relativePath ) throws IOException
 	{
 		char delimiter = ',';
-		if( relativePath.toLowerCase().matches( ".*\\.tsv")) delimiter = '\t';
+		if( relativePath.toLowerCase().matches( ".*\\.tsv")) {
+			delimiter = '\t';
+		}
 		return getCSVReader( relativePath, delimiter );
 	}
 	
@@ -317,17 +369,24 @@ public class EasyPersister extends Persister
 	 */
 	public Map<String, Double> csvToNumericMap( String csvFile, String nameColumn, String dataColumn ) throws IOException
 	{
-		Map<String,Double> map = new HashMap<String, Double>();
+		// TODO check if LinkedHashMap required
+		Map<String, Double> map = new LinkedHashMap<String, Double>();
 		CsvReader reader = getCSVReader( csvFile );
 		Set<String> headers = new HashSet<String>( Arrays.asList( reader.getHeaders() ) );
-		if( ! headers.contains( dataColumn )) log.fatal( "Looking for data column " + dataColumn + " in " + csvFile + " but it doesn't exist" );
-		if( ! headers.contains( nameColumn )) log.fatal( "Looking for name column " + nameColumn + " in " + csvFile + " but it doesn't exist" );
+		if( ! headers.contains( dataColumn )) {
+			log.fatal( "Looking for data column " + dataColumn + " in " + csvFile + " but it doesn't exist" );
+		}
+		if( ! headers.contains( nameColumn )) {
+			log.fatal( "Looking for name column " + nameColumn + " in " + csvFile + " but it doesn't exist" );
+		}
 		while( reader.readRecord() )
 		{
 			if( reader.get( dataColumn ) != null && reader.get( dataColumn ).length() > 0 )
 			{
 				map.put( reader.get( nameColumn ), Double.parseDouble( reader.get( dataColumn ) ) );
-			} else log.debug( "No value for " + reader.get( nameColumn ));
+			} else {
+				log.debug( "No value for " + reader.get( nameColumn ));
+			}
 		}
 		reader.close();
 		return map;
@@ -351,12 +410,14 @@ public class EasyPersister extends Persister
 	 */
 	public Map<String, String> csvToStringMap( String csvFile, String keys, String values ) throws IOException
 	{
-		Map<String,String> map = new HashMap<String, String>();
+		// TODO check if LinkedHashMap required
+		Map<String, String> map = new LinkedHashMap<String, String>();
 		CsvReader reader = getCSVReader( csvFile );
 		while( reader.readRecord() )
 		{
-			if( reader.get( keys ) != null && reader.get( keys ).length() > 0 )
+			if( reader.get( keys ) != null && reader.get( keys ).length() > 0 ) {
 				map.put( reader.get( keys ), reader.get( values )+"" );
+			}
 		}
 		return map;
 	}
@@ -424,17 +485,23 @@ public class EasyPersister extends Persister
 		Table<String,String,Double> map = HashBasedTable.create();
 		CsvReader reader = getCSVReader( csvFile, delimiter );
 		Set<String> cols = columnsToGet;
-		if( cols == null ) cols = new HashSet<String>( Arrays.asList( reader.getHeaders() ) );
+		if( cols == null ) {
+			cols = new HashSet<String>( Arrays.asList( reader.getHeaders() ) );
+		}
 		cols.remove( nameColumn );
-		if( ignoreColumns != null ) cols.removeAll( ignoreColumns );
+		if( ignoreColumns != null ) {
+			cols.removeAll( ignoreColumns );
+		}
 		
-		while( reader.readRecord() )
+		while( reader.readRecord() ) {
 			for( String s : cols )
 			{
 				String val = reader.get(s);
-				if( val != null && val.length() > 0 )
+				if( val != null && val.length() > 0 ) {
 					map.put( reader.get( nameColumn ), s, Double.parseDouble( val ) );
+				}
 			}
+		}
 		return map;
 	}
 	
@@ -463,21 +530,29 @@ public class EasyPersister extends Persister
 	 */
 	public Map<String, LinearInterpolator> csvVerticalToCurves( String csvFile, String xCol, Collection<String> columns ) throws IOException
 	{
-		Map<String,LinearInterpolator> map = new HashMap<String, LinearInterpolator>();
+		// TODO check if LinkedHashMap required
+		Map<String, LinearInterpolator> map = new LinkedHashMap<String, LinearInterpolator>();
 		CsvReader reader = getCSVReader( csvFile );
 		
-		if( xCol == null ) xCol = reader.getHeaders()[0];
+		if( xCol == null ) {
+			xCol = reader.getHeaders()[0];
+		}
 		
-		if( columns == null || columns.size() == 0) columns = new ArrayList<String>( Arrays.asList( reader.getHeaders() ));
+		if( columns == null || columns.size() == 0) {
+			columns = new ArrayList<String>( Arrays.asList( reader.getHeaders() ));
+		}
 		columns.remove( xCol );
 		
-		for( String s : columns ) map.put( s, new LinearInterpolator() );
+		for( String s : columns ) {
+			map.put( s, new LinearInterpolator() );
+		}
 		
 		while( reader.readRecord() && reader.get( xCol ).length() > 0 )
 		{
 			double year = Double.parseDouble( reader.get( xCol ));
-			for( String s : columns )
+			for( String s : columns ) {
 				map.get( s ).addPoint( year, Double.parseDouble( reader.get( s ) ) );
+			}
 		}
 		return map;
 	}
@@ -517,7 +592,8 @@ public class EasyPersister extends Persister
 	 */
 	public Map<String, LinearInterpolator> csvHorizontalToCurve( String csvFile ) throws NumberFormatException, IOException
 	{
-		Map<String, LinearInterpolator> map = new HashMap<String, LinearInterpolator>();
+		// TODO check if LinkedHashMap required
+		Map<String, LinearInterpolator> map = new LinkedHashMap<String, LinearInterpolator>();
 		CsvReader reader = getCSVReader( csvFile );
 		int[] columns = new int[reader.getHeaderCount()-1];
 		for( int i = 1; i < reader.getHeaderCount(); i++ )
@@ -560,12 +636,18 @@ public class EasyPersister extends Persister
 	{
 		//Get the rows and columns we're working with
 		Set<String> colNames = new HashSet<String>();
-		for( T c : columns ) colNames.add(c.getName());
+		for( T c : columns ) {
+			colNames.add(c.getName());
+		}
 		Set<String> rowNames = new HashSet<String>();
-		for( S r : rows ) rowNames.add(r.getName());
+		for( S r : rows ) {
+			rowNames.add(r.getName());
+		}
 		
 		//Check the file is OK and get a reader
-		if( ! csvFileOK( "", csvFile, true, colNames )) throw new RuntimeException("Bad CSV File");
+		if( ! csvFileOK( "", csvFile, true, colNames )) {
+			throw new RuntimeException("Bad CSV File");
+		}
 		CsvReader reader = getCSVReader( csvFile );
 		
 		//Make the target map
@@ -573,40 +655,54 @@ public class EasyPersister extends Persister
 		while( reader.readRecord() )
 		{
 			String row = reader.get( 0 );
-			if( ! rowNames.contains( row )) log.warn("Unknown row in " +csvFile + " at line " + reader.getCurrentRecord());
+			if( ! rowNames.contains( row )) {
+				log.warn("Unknown row in " +csvFile + " at line " + reader.getCurrentRecord());
+			}
 			S r = rows.forName( row );
 			rowNames.remove( row );
 			for( T col : columns )
 			{
 				String s = reader.get( col.getName() );
-				if( s != null && s.length() > 0 )
+				if( s != null && s.length() > 0 ) {
 					ret.put( col, r, Double.parseDouble( s ) );
+				}
 			}
 		}
-		if( rowNames.size() > 0 ) log.warn("Didn't find all rows in " + csvFile + ". Missing: " + rowNames );
+		if( rowNames.size() > 0 ) {
+			log.warn("Didn't find all rows in " + csvFile + ". Missing: " + rowNames );
+		}
 		return ret;
 	}
 	
 	public <T extends Indexed & Named> DoubleMap<T> csvToDoubleMap( String csvFile, NamedIndexSet<T> rows, String column ) throws IOException
 	{
-		if( ! csvFileOK( "", csvFile, true, column )) return null;
+		if( ! csvFileOK( "", csvFile, true, column )) {
+			return null;
+		}
 		
 		Set<String> rowNames = new HashSet<String>();
-		for( T r : rows ) rowNames.add(r.getName());
+		for( T r : rows ) {
+			rowNames.add(r.getName());
+		}
 		
 		CsvReader reader = getCSVReader( csvFile );
 		DoubleMap<T> map = new DoubleMap<T>( rows );
 		while( reader.readRecord() )
 		{
 			String row = reader.get( 0 );
-			if( ! rowNames.contains( row )) log.warn("Unknown row in " +csvFile + " at line " + reader.getCurrentRecord());
+			if( ! rowNames.contains( row )) {
+				log.warn("Unknown row in " +csvFile + " at line " + reader.getCurrentRecord());
+			}
 			T r = rows.forName( row );
 			rowNames.remove( row );
 			String s = reader.get( column );
-			if( s != null && s.length() > 0 )
+			if( s != null && s.length() > 0 ) {
 				map.put( r, Double.parseDouble( s ) );
+			}
 		}
-		if( rowNames.size() > 0 ) log.warn("Didn't find all rows in " + csvFile + ". Missing: " + rowNames );
+		if( rowNames.size() > 0 ) {
+			log.warn("Didn't find all rows in " + csvFile + ". Missing: " + rowNames );
+		}
 		return map;
 	}
 	
@@ -619,6 +715,7 @@ public class EasyPersister extends Persister
 	 * instead of the default thread one. (This helps when Repast swaps classloaders)
 	 * 
 	 */
+	@Override
 	public <T> T read( Class<? extends T> type, InputNode source, boolean strict ) throws Exception
 	{
 		ClassLoader defaultLoader = Thread.currentThread().getContextClassLoader();
@@ -636,6 +733,7 @@ public class EasyPersister extends Persister
 	/**
 	 * Wrapper round a broken version from SimpleXML - probably not necessary any more
 	 */
+	@Override
 	public <T> T read( Class<? extends T> type, String filename ) throws Exception
 	{
 		try
@@ -679,8 +777,9 @@ public class EasyPersister extends Persister
 	}
 
 	/**
-	 * Writes the object out to the given filename, then reads
-	 * the file back and returns it
+	 * Writes the object out to the given filename (creating non-existing dirs),
+	 * then reads the file back and returns it
+	 * 
 	 * @param object
 	 * @param filename
 	 * @return
@@ -690,6 +789,10 @@ public class EasyPersister extends Persister
 	public <T> T roundTripSerialise( T object, String filename) throws Exception
 	{
 		File f = new File( filename );
+		if (!f.getParentFile().exists()) {
+			f.getParentFile().mkdirs();
+		}
+
 		write( object, f );
 		T t = read( (Class<? extends T>)object.getClass(), f );
 	
@@ -736,9 +839,14 @@ public class EasyPersister extends Persister
 	
 	public String contextualise( String c, Map<String,String> extra )
 	{
-		for( String k : context.keySet() ) c = c.replaceAll( "%"+k, context.get( k ) );
-		if( extra != null )
-			for( String k : extra.keySet() ) c = c.replaceAll( "%"+k, extra.get( k ) );
+		for( String k : context.keySet() ) {
+			c = c.replaceAll( "%"+k, context.get( k ) );
+		}
+		if( extra != null ) {
+			for( String k : extra.keySet() ) {
+				c = c.replaceAll( "%"+k, extra.get( k ) );
+			}
+		}
 		return c;
 	}
 	

@@ -1,14 +1,44 @@
+ /**
+ * This file is part of
+ * 
+ * ModellingUtilities
+ *
+ * Copyright (C) 2014 School of GeoScience, University of Edinburgh, Edinburgh, UK
+ * 
+ * ModellingUtilities is free software: You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *  
+ * ModellingUtilities is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * School of Geoscience, University of Edinburgh, Edinburgh, UK
+ * 
+ */
 package com.moseph.modelutils.fastdata;
 
-import java.util.*;
+import static com.moseph.modelutils.Utilities.nextIntFromTo;
+import static com.moseph.modelutils.fastdata.Columns.A;
+import static com.moseph.modelutils.fastdata.Columns.B;
+import static com.moseph.modelutils.fastdata.Columns.C;
+import static com.moseph.modelutils.fastdata.Columns.D;
+import static com.moseph.modelutils.fastdata.Columns.E;
+import static com.moseph.modelutils.fastdata.Columns.cols;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
-import org.junit.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.moseph.modelutils.Utilities.*;
+import org.junit.Test;
 
-import static java.lang.Math.exp;
-import static org.junit.Assert.*;
-import static com.moseph.modelutils.fastdata.Columns.*;
+import de.cesr.uranus.core.URandomService;
 
 public class IntMapTest 
 {
@@ -71,8 +101,9 @@ public class IntMapTest
 		IntMap<Columns> t2 = new IntMap<Columns>( cols );
 		IntMap<Columns> initial = new IntMap<Columns>( cols );
 		IntMap<Columns> sum = new IntMap<Columns>( cols );
-		for( Columns type : cols )
-			initial.put( type, nextIntFromTo(0, 30 ) );
+		for( Columns type : cols ) {
+			initial.put( type, nextIntFromTo(0, 30 , URandomService.getURandomService(), null) );
+		}
 		initial.copyInto( t1 );
 		assertEquals( initial.getTotal(), t1.getTotal() );
 		for( int i = 0; i < initial.getTotal(); i++ )
@@ -88,5 +119,4 @@ public class IntMapTest
 		assertEquals( 0, t1.getTotal() );
 		assertEquals( initial.getTotal(), t2.getTotal() );
 	}
-
 }

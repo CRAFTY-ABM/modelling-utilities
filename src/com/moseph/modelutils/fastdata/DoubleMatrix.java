@@ -1,9 +1,35 @@
+ /**
+ * This file is part of
+ * 
+ * ModellingUtilities
+ *
+ * Copyright (C) 2014 School of GeoScience, University of Edinburgh, Edinburgh, UK
+ * 
+ * ModellingUtilities is free software: You can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *  
+ * ModellingUtilities is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * School of Geoscience, University of Edinburgh, Edinburgh, UK
+ * 
+ */
 package com.moseph.modelutils.fastdata;
 
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 
@@ -104,8 +130,9 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public void put( double[][] in )
 	{
-		for( int i = 0; i < data.length; i++ )
+		for( int i = 0; i < data.length; i++ ) {
 			System.arraycopy( in[i], 0, data[i], 0, data[i].length );
+		}
 	}
 	
 	/**
@@ -114,9 +141,11 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	 */
 	public void putT( double[][] in )
 	{
-		for(int i = 0; i < colIndexes.size(); i++ )
-			for( int j = 0; j < rowIndexes.size(); j++ )
+		for(int i = 0; i < colIndexes.size(); i++ ) {
+			for( int j = 0; j < rowIndexes.size(); j++ ) {
 				data[i][j] = in[j][i];
+			}
+		}
 	}
 	
 	public void increment( T col, S row )
@@ -133,8 +162,9 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public void clear()
 	{
-		for( double[] d : data )
+		for( double[] d : data ) {
 			Arrays.fill( d, initial );
+		}
 		total = initial * size();
 		dirty();
 	}
@@ -146,19 +176,25 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public double getTotal()
 	{
-		if( dirtyTotal ) updateTotals();
+		if( dirtyTotal ) {
+			updateTotals();
+		}
 		return total;
 	}
 	
 	public double getRowTotal( S row )
 	{
-		if( dirtyTotal ) updateTotals();
+		if( dirtyTotal ) {
+			updateTotals();
+		}
 		return rowTotals.get( row );
 	}
 	
 	public double getColumnTotal( T col )
 	{
-		if( dirtyTotal ) updateTotals();
+		if( dirtyTotal ) {
+			updateTotals();
+		}
 		return colTotals.get( col );
 	}
 	
@@ -179,74 +215,96 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public double getWeightedColAverage( T col )
 	{
-		if( rowWeightings != null )
+		if( rowWeightings != null ) {
 			return getWeightedColTotal( col );
+		}
 		return getColAverage( col );
 	}
 	
 	public double getWeightedRowAverage( S row )
 	{
-		if( colWeightings != null )
+		if( colWeightings != null ) {
 			return getWeightedRowTotal( row ) / colWeightings.getDoubleTotal();
+		}
 		return getRowAverage( row );
 	}
 	
 	public DoubleMap<T> getWeightedColTotals()
 	{
-		if( dirtyWeightedTotal ) updateWeightedTotals();
+		if( dirtyWeightedTotal ) {
+			updateWeightedTotals();
+		}
 		return colWeightedTotals;
 	}
 	
 	public double getWeightedColTotal( T col )
 	{
-		if( dirtyWeightedTotal ) updateWeightedTotals();
+		if( dirtyWeightedTotal ) {
+			updateWeightedTotals();
+		}
 		return colWeightedTotals.get( col );
 	}
 	
 	public DoubleMap<S> getWeightedRowTotals()
 	{
-		if( dirtyWeightedTotal ) updateWeightedTotals();
+		if( dirtyWeightedTotal ) {
+			updateWeightedTotals();
+		}
 		return rowWeightedTotals;
 	}
 	public double getWeightedRowTotal( S row )
 	{
-		if( dirtyWeightedTotal ) updateWeightedTotals();
+		if( dirtyWeightedTotal ) {
+			updateWeightedTotals();
+		}
 		return rowWeightedTotals.get( row );
 	}
 	
 	public T getMaxCol()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return maxCol;
 	}
 	
 	public T getMinCol()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return minCol;
 	}
 	
 	public S getMaxRow()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return maxRow;
 	}
 	
 	public S getMinRow()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return minRow;
 	}
 	
 	public double getMax()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return vMax;
 	}
 	
 	public double getMin()
 	{
-		if( dirtyMaxMin ) updateMaxMin();
+		if( dirtyMaxMin ) {
+			updateMaxMin();
+		}
 		return vMin;
 	}
 	
@@ -255,7 +313,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 		total = 0;
 		colTotals.clear();
 		rowTotals.clear();
-		for( T c : colIndexes )
+		for( T c : colIndexes ) {
 			for( S r : rowIndexes )
 			{
 				double value = get( c, r );
@@ -263,6 +321,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 				rowTotals.add( r, value );
 				total += value;
 			}
+		}
 		dirtyTotal = false;
 	}
 	
@@ -270,7 +329,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	{
 		colWeightedTotals.clear();
 		rowWeightedTotals.clear();
-		for( T c : colIndexes )
+		for( T c : colIndexes ) {
 			for( S r : rowIndexes )
 			{
 				double value = get( c, r );
@@ -287,6 +346,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 				colWeightedTotals.add( c, value * rowWeight * colWeight );
 				rowWeightedTotals.add( r, value * rowWeight * colWeight );
 			}
+		}
 		dirtyWeightedTotal = false;
 	}
 	
@@ -294,7 +354,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	{
 		vMax = -Double.MAX_VALUE;
 		vMin = Double.MAX_VALUE;
-		for( T col : colIndexes )
+		for( T col : colIndexes ) {
 			for( S row : rowIndexes )
 		{
 			double val = data[col.getIndex()][row.getIndex()];
@@ -311,6 +371,7 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 				minRow = row;
 			}
 		}
+		}
 	}
 	
 	
@@ -323,9 +384,11 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public void copyInto( DoubleMatrix<T,S> target )
 	{
-		for( T col : colIndexes )
-			for( S row : rowIndexes )
-				target.put(col, row, get( col, row ) ); 
+		for( T col : colIndexes ) {
+			for( S row : rowIndexes ) {
+				target.put(col, row, get( col, row ) );
+			}
+		} 
 	}
 	
 	public void copyFrom( DoubleMatrix<T,S> source )
@@ -335,18 +398,24 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public void addInto( DoubleMatrix<T,S> target )
 	{
-		for( T col : colIndexes )
-			for( S row : rowIndexes )
-				target.add(col, row, get( col, row ) ); 
+		for( T col : colIndexes ) {
+			for( S row : rowIndexes ) {
+				target.add(col, row, get( col, row ) );
+			}
+		} 
 	}
 	
 	public void copyInto( Map<T, Map<S, Double>> target )
 	{
 		for( T col : colIndexes )
 		{
-			if( ! target.containsKey( col )) target.put( col, new HashMap<S, Double>() );
-			for( S row : rowIndexes )
+			// TODO check if LinkedHashMap required
+			if (!target.containsKey(col)) {
+				target.put( col, new LinkedHashMap<S, Double>() );
+			}
+			for( S row : rowIndexes ) {
 				target.get( col ).put( row, get( col, row ) );
+			}
 		}
 	}
 	
@@ -354,15 +423,20 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	{
 		for( T col : colIndexes )
 		{
-			if( ! colIndexes.containsKey( col )) continue;
+			if( ! colIndexes.containsKey( col )) {
+				continue;
+			}
 			for( S row : rowIndexes )
 			{
-				if( ! rowIndexes.containsKey( row )) continue;
+				if( ! rowIndexes.containsKey( row )) {
+					continue;
+				}
 					put(col, row, source.get( col ).get( row ) );
 			}
 		}
 	}
 	
+	@Override
 	public String toString()
 	{
 		return toMap().toString();
@@ -370,7 +444,8 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	
 	public Map<T, Map<S,Double>> toMap()
 	{
-		Map<T, Map<S,Double>> map =new HashMap<T, Map<S,Double>>();
+		// TODO check if LinkedHashMap required
+		Map<T, Map<S, Double>> map = new LinkedHashMap<T, Map<S, Double>>();
 		copyInto( map );
 		return map;
 	}
@@ -400,14 +475,18 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 	public DoubleMap<S> getColumn( T column )
 	{
 		DoubleMap<S> col = new DoubleMap<S>( rowIndexes );
-		for( S s : rowIndexes ) col.put( s, get( column, s ) );
+		for( S s : rowIndexes ) {
+			col.put( s, get( column, s ) );
+		}
 		return col;
 	}
 	
 	public DoubleMap<T> getRow( S row )
 	{
 		DoubleMap<T> ret = new DoubleMap<T>( colIndexes );
-		for( T t : colIndexes ) ret.put( t, get( t, row ) );
+		for( T t : colIndexes ) {
+			ret.put( t, get( t, row ) );
+		}
 		return ret;
 	}
 	
@@ -431,25 +510,33 @@ public class DoubleMatrix<T extends Indexed, S extends Indexed>
 		double max = getMax();
 		double min = getMin();
 		System.out.println("Max: " + max + " Min: " + min);
-		if( abs(max )< 1 || ( abs(min) < 1 && abs(min) > 0 )) pres = width-3;
-		for( T c : colIndexes ) width = max(width,(c+"").length());
-		for( S r : rowIndexes ) width = max(width,(r+"").length());
+		if( abs(max )< 1 || ( abs(min) < 1 && abs(min) > 0 )) {
+			pres = width-3;
+		}
+		for( T c : colIndexes ) {
+			width = max(width,(c+"").length());
+		}
+		for( S r : rowIndexes ) {
+			width = max(width,(r+"").length());
+		}
 		System.out.println("Width: " + width);
 		String stringF = "| %"+width+"s ";
 		String doubleF = "| %"+width+"."+pres+"f ";
 		//String doubleF = "%9.3f";
 		String lineEnd = " |\n";
 		StringBuffer out = new StringBuffer(String.format( stringF, "Rownames" ));
-		for( T c : colIndexes ) out.append( String.format( stringF, c.toString() ) );
+		for( T c : colIndexes ) {
+			out.append( String.format( stringF, c.toString() ) );
+		}
 		out.append(lineEnd);
 		for( S r : rowIndexes ) 
 		{
 			out.append(String.format( stringF, r.toString()));
-			for( T c : colIndexes ) out.append( String.format( doubleF, get(c,r) ) );
+			for( T c : colIndexes ) {
+				out.append( String.format( doubleF, get(c,r) ) );
+			}
 			out.append(lineEnd);
 		}
 		return out.toString();
 	}
-		
-	
 }
