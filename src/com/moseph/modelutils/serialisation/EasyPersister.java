@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.filter.Filter;
 import org.simpleframework.xml.stream.InputNode;
 
 import com.csvreader.CsvReader;
@@ -87,6 +88,11 @@ public class EasyPersister extends Persister
 		classLoader = getClass().getClassLoader();
 	}
 	
+	public EasyPersister(Filter filter) {
+		super(filter);
+		classLoader = getClass().getClassLoader();
+	}
+
 	public EasyPersister( ClassLoader classLoader )
 	{
 		this.classLoader = classLoader;

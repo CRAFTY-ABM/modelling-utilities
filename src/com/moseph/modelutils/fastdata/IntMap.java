@@ -155,12 +155,6 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	}
 	
 	@Override
-	public String toString()
-	{
-		return toMap().toString();
-	}
-	
-	@Override
 	public Map<T, Integer> toMap()
 	{
 		// TODO check if LinkedHashMap required
@@ -193,5 +187,17 @@ public class IntMap<T extends Indexed> extends AbstractNumberMap<T>
 	public double getDoubleTotal()
 	{
 		return getTotal();
+	}
+
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("IntMap: ");
+		int count = 0;
+		for (T k : getKeys()) {
+			count++;
+			buffer.append(k + " = " + get(k)
+					+ (count <= this.maxIndex ? ", " : ""));
+		}
+		return buffer.toString();
 	}
 }
