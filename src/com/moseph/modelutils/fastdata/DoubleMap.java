@@ -192,4 +192,15 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 		}
 	}
 	
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("DoubleMap: ");
+		int count = 0;
+		for (T k : getKeys()) {
+			count++;
+			buffer.append(k + " = " + get(k)
+					+ (count <= this.maxIndex ? ", " : ""));
+		}
+		return buffer.toString();
+	}
 }

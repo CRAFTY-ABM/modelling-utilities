@@ -7,7 +7,7 @@ import org.simpleframework.xml.*;
 /**
  * A Curve which interpolates between a set of Breakpoints that set
  * an x and y value.
- * 
+ *
  * Sampling after the last Breakpoint returns the value of that breakpoint,
  * and sampling before the first returns the first value (i.e. the lines extend horizontally)
  * @author dmrust
@@ -18,10 +18,10 @@ public class LinearInterpolator implements Curve
 {
 	@ElementList(inline=true)
 	SortedSet<Breakpoint> breakpoints = new TreeSet<Breakpoint>();
-	
+
 	public LinearInterpolator()
 	{
-		
+
 	}
 
 	public double sample( double position )
@@ -34,9 +34,9 @@ public class LinearInterpolator implements Curve
 			//We've already checked that the first BP is less that  the sampling position
 			if( bp.position > position )
 			{
-				return previous.level + 
+				return previous.level +
 					//Proportion of interval
-					((position-previous.position)/(bp.position-previous.position)) 
+					((position-previous.position)/(bp.position-previous.position))
 					//Range over interval
 					* (bp.level - previous.level );
 			}
@@ -44,7 +44,7 @@ public class LinearInterpolator implements Curve
 		}
 		return  breakpoints.last().level;
 	}
-	
+
 	public void addPoint( double position, double level )
 	{
 		breakpoints.add( new Breakpoint( position, level ) );
@@ -54,18 +54,25 @@ public class LinearInterpolator implements Curve
 	{
 		return new ArrayList<Breakpoint>( breakpoints );
 	}
-	
+
 	public void setBreakpoints( List<Breakpoint> bp )
 	{
 		breakpoints.clear();
 		breakpoints.addAll( bp );
 	}
-	
+
 	public String displayString()
 	{
 		String s = "Interpolator: ";
 		for( Breakpoint b : breakpoints )
 			s += b.toString() + " ";
 		return s;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return displayString();
 	}
 }

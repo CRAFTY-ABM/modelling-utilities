@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,19 +50,18 @@ public class Utilities {
 
 	public static double nextDoubleFromTo(double start, double end,
 			UranusRandomService rService, String generatorName) {
-		return start + (end - start)
-				* rService.getGenerator(generatorName).raw();
+		return start + (end - start) * rService.nextRaw(generatorName);
 	}
 
 	public static double nextDouble(UranusRandomService rService,
 			String generatorName) {
-		return rService.getGenerator(generatorName).nextDouble();
+		return rService.nextDouble(generatorName);
 	}
 
 	public static int nextIntFromTo(int start, int end,
 			UranusRandomService rService, String generatorName) {
 		return (int) (start + (long) ((1L + end - start) * rService
-				.getGenerator(generatorName).raw()));
+				.nextRaw(generatorName)));
 	}
 
 	{
@@ -122,10 +121,12 @@ public class Utilities {
 				maxProb += d;
 			}
 			if (maxProb == 0) {
+				// uniformly distributed:
 				return sample(probabilities.keySet(), rService, generatorName);
 			}
 		}
-		double random = rService.getGenerator(generatorName).nextDouble()
+		// normalise:
+		double random = rService.nextDouble(generatorName)
 				* maxProb;
 		for (Entry<T, Double> e : probabilities.entrySet()) {
 			current += e.getValue();
@@ -158,7 +159,7 @@ public class Utilities {
 			// I'm too lazy to do maths.
 			int num = 0;
 			for (int i = 0; i < population; i++) {
-				if (rService.getGenerator(generatorName).nextDouble() < rate) {
+				if (rService.nextDouble(generatorName) < rate) {
 					num++;
 				}
 			}
@@ -180,7 +181,7 @@ public class Utilities {
 	public static int sampleRate(double rate, UranusRandomService rService,
 			String generatorName) {
 		int value = (int) floor(rate);
-		if (rService.getGenerator(generatorName).nextDouble() < rate - value) {
+		if (rService.nextDouble(generatorName) < rate - value) {
 			value++;
 		}
 		return value;
@@ -225,7 +226,7 @@ public class Utilities {
 	public static <T> T consume(List<T> population,
 			UranusRandomService rService, String generatorName) {
 		int index = (int) ((1L + (population.size() - 1)) * rService
-				.getGenerator(generatorName).raw());
+				.nextRaw(generatorName));
 		T val = population.get(index);
 		population.remove(index);
 		return val;
@@ -355,25 +356,25 @@ public class Utilities {
 	 */
 	public static <T> Set<T> sampleN(Collection<T> input, int toSample,
 			UranusRandomService rService, String generatorName) {
-		Set<T> ret = new HashSet<T>(toSample);
+		Set<T> ret = new LinkedHashSet<T>(toSample);
 		if (toSample >= input.size()) {
 			ret.addAll(input);
 			return ret;
 		}
 		int nLeft = input.size();
 		Iterator<T> it = input.iterator();
-		while (toSample > 0 && it.hasNext()) {
+		int toSampleVary = toSample;
+		while (toSampleVary > 0 && it.hasNext()) {
 			T cur = it.next();
 			// -1 as it's inclusive
 			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
 			if (rand < toSample) {
 				ret.add(cur);
-				toSample--;
+				toSampleVary--;
 			}
 			nLeft--;
 		}
 		return ret;
-
 	}
 
 	/**
@@ -481,6 +482,7 @@ public class Utilities {
 			String generatorName) {
 		for (int i = list.size() - 1; i >= 1; i--) {
 			int j = nextIntFromTo(0, i, rService, generatorName);
+
 			T a = list.get(i);
 			list.set(i, list.get(j));
 			list.set(j, a);
