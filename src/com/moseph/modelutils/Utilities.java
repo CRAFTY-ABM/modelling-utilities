@@ -69,7 +69,7 @@ public class Utilities {
 			randHelp = new RepastRandomHelper();
 			System.out.println("Using Repast RNG");
 		} catch (Exception e) {
-			System.out.println("No Repast RNG found");
+			System.out.println("No Repast RNG found!");
 		}
 	}
 
@@ -347,12 +347,12 @@ public class Utilities {
 	/**
 	 * Returns up to the specified number of samples from the input. Get N items
 	 * from a list. Alternate formulation to sampleN( Collection, number ) as it
-	 * avoids copying the input
+	 * avoids copying the input.
 	 * 
 	 * @param <T>
 	 * @param input
 	 * @param toSample
-	 * @return
+	 * @return sampled set
 	 */
 	public static <T> Set<T> sampleN(Collection<T> input, int toSample,
 			UranusRandomService rService, String generatorName) {
@@ -368,7 +368,7 @@ public class Utilities {
 			T cur = it.next();
 			// -1 as it's inclusive
 			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
-			if (rand < toSample) {
+			if (rand < toSampleVary) {
 				ret.add(cur);
 				toSampleVary--;
 			}
