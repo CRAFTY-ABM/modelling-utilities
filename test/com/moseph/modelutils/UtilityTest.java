@@ -159,7 +159,7 @@ public class UtilityTest
 		assertEquals( expected, sortMap( scores ));
 	}
 	
-	@SuppressWarnings("unchecked")
+
 	@Test
 	public void testSamplingRates()
 	{
@@ -171,6 +171,23 @@ public class UtilityTest
 		}
 	}
 	
+	@Test
+	public void testSampleN() {
+		int size = 20;
+		int toSample = 10;
+		ArrayList<Integer> input = new ArrayList<Integer>(size);
+		for (int i = 0; i < size; i++) {
+			input.add(new Integer(i));
+		}
+
+		Set<Integer> sampled = Utilities.sampleN(input, toSample,
+				URandomService.getURandomService(), null);
+		assertEquals(
+				"Returned list should be of requested size (however it's possible it is not due to randomness)",
+				toSample,
+				sampled.size());
+	}
+
 	@Test
 	public void testIntegerRandom()
 	{
