@@ -1,15 +1,16 @@
 package com.moseph.modelutils.serialisation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.apache.log4j.*;
-import org.junit.*;
+import org.junit.Test;
 
-import com.moseph.modelutils.fastdata.*;
-import com.moseph.modelutils.serialisation.EasyPersisterTest.Col;
-import com.moseph.modelutils.serialisation.EasyPersisterTest.Row;
+import com.moseph.modelutils.fastdata.DoubleMap;
+import com.moseph.modelutils.fastdata.DoubleMatrix;
+import com.moseph.modelutils.fastdata.Indexed;
+import com.moseph.modelutils.fastdata.Named;
+import com.moseph.modelutils.fastdata.NamedArrayIndexSet;
 
 public class EasyPersisterTest
 {
@@ -19,7 +20,8 @@ public class EasyPersisterTest
 	{
 		EasyPersister pers = new EasyPersister();
 		pers.setBaseDir( "test-data" );
-		DoubleMatrix<Col, Row> mat = pers.csvToMatrix( "testMatrix.csv", cols, rows );
+		DoubleMatrix<Col, Row> mat = pers.csvToMatrix("testMatrix.csv", cols,
+				rows, null);
 		assertEquals(1, mat.get( A, X  ), 0.0001 );
 		assertEquals(2, mat.get( B, X  ), 0.0001 );
 		assertEquals(3, mat.get( C, X  ), 0.0001 );
@@ -36,7 +38,8 @@ public class EasyPersisterTest
 	{
 		EasyPersister pers = new EasyPersister();
 		pers.setBaseDir( "test-data" );
-		DoubleMap<Row> mat = pers.csvToDoubleMap( "testMatrix.csv", rows, "A" );
+		DoubleMap<Row> mat = pers.csvToDoubleMap("testMatrix.csv", rows, "A",
+				null);
 		assertEquals( 3, rows.getMaxIndex() );
 		assertEquals(1, mat.get( X  ), 0.0001 );
 		assertEquals(4, mat.get( Y  ), 0.0001 );
