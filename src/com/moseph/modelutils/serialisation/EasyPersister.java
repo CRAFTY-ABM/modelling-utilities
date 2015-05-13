@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.filter.Filter;
 import org.simpleframework.xml.stream.InputNode;
+import org.simpleframework.xml.transform.Matcher;
 
 import com.csvreader.CsvReader;
 import com.google.common.collect.HashBasedTable;
@@ -93,7 +94,17 @@ public class EasyPersister extends Persister {
 		classLoader = getClass().getClassLoader();
 	}
 
+	public EasyPersister(Filter filter, Matcher matcher) {
+		super(filter, matcher);
+		classLoader = getClass().getClassLoader();
+	}
+
 	public EasyPersister(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public EasyPersister(Filter filter, Matcher matcher, ClassLoader classLoader) {
+		super(filter, matcher);
 		this.classLoader = classLoader;
 	}
 
