@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="ModellingUtilities-Jar-Creation">
 
+	<!--property name="dir_target" value="${basedir}/../../../CRAFTY_CoBRA_Trunk/lib" /-->
 	<property name="dir_target" value="${basedir}/../../lib" />
 	<property file="../../project.properties"/>
 

@@ -1,15 +1,20 @@
 package com.moseph.modelutils.curve;
 
-import static java.lang.Math.*;
+import static java.lang.Math.exp;
+import static java.lang.Math.pow;
 
 import org.simpleframework.xml.Attribute;
+
 
 /**
  * Should implement:
  * 
- * a + ( (k-a) / (1 + q*exp(( -b * ( x - m ) ))^(1/v)))
+ * a + ( (k-a) / (1 + q*exp(-b * ( x - m )))^(1/v))
+ * 
+ * LaTeX: A + {K-A \over {(1 + Q\exp(-B(x - m)))^{1\over v}}}
+ * 
  * @author dmrust
- *
+ * 
  */
 public class GeneralisedLogisticFunction implements Curve
 {
