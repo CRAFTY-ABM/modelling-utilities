@@ -38,6 +38,15 @@ public class SigmoidFunction implements Curve
 	/**
 	 * Simplest constructor.
 	 * 
+	 * @param H
+	 */
+	public SigmoidFunction(@Attribute(name = "H") double H) {
+		this.H = H;
+	}
+
+	/**
+	 * Complete constructor.
+	 * 
 	 * @param A
 	 * @param H
 	 * @param P
@@ -47,7 +56,7 @@ public class SigmoidFunction implements Curve
 	 */
 	public SigmoidFunction(@Attribute(name = "A") double A, @Attribute(name = "H") double H,
 			@Attribute(name = "P") double P, @Attribute(name = "C") double C, @Attribute(name = "D") double D,
-			boolean normalise)
+			@Attribute(name = "normalise") boolean normalise)
 	{
 		this.A = A;
 		this.H = H;
