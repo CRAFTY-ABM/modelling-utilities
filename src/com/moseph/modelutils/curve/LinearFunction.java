@@ -1,7 +1,5 @@
 package com.moseph.modelutils.curve;
 
-import static java.lang.Math.*;
-
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -45,4 +43,11 @@ public class LinearFunction implements Curve
 		return String.format( "y=%f x + %f", b, a );
 	}
 	
+	public void setA(double a) {
+		this.a = a;
+	}
+
+	public void setB(double b) {
+		this.b = b;
+	}
 }
