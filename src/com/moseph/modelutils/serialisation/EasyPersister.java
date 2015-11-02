@@ -483,9 +483,20 @@ public class EasyPersister extends Persister {
 		// TODO check if LinkedHashMap required
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		CsvReader reader = getCSVReader(csvFile, extra);
+
+		if (reader.get(values) == null || reader.get(values).length() == 0) {
+			// <- LOGGING
+			log.warn("CSV file (" + csvFile + ") does not contain values column '" + values + "'!");
+			// LOGGING ->
+		}
+
 		while (reader.readRecord()) {
 			if (reader.get(keys) != null && reader.get(keys).length() > 0) {
 				map.put(reader.get(keys), reader.get(values) + "");
+				} else {
+					// <- LOGGING
+				log.warn("CSV file (" + csvFile + ") does not contain keys column '" + keys + "'!");
+					// LOGGING ->
 			}
 		}
 		return map;
@@ -728,8 +739,8 @@ public class EasyPersister extends Persister {
 		while (reader.readRecord()) {
 			String row = reader.get(0);
 			if (!rowNames.contains(row)) {
-				log.warn("Unknown row in " + csvFile + " at line "
-						+ reader.getCurrentRecord());
+				log.warn("Unknown row (" + row + ") in " + csvFile + " at line " + reader.getCurrentRecord()
+						+ ". Known rows: " + rowNames);
 			}
 			S r = rows.forName(row);
 			rowNames.remove(row);

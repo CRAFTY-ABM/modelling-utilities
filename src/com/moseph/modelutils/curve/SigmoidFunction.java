@@ -10,6 +10,15 @@ import org.simpleframework.xml.Attribute;
  * 
  * LaTeX: {a(x-c)^p} \over {(h^p + |(x-c)^p|)} + d
  * 
+ * normalised:
+ * 
+ * \begin(equation}
+ * c_s = 
+ * \begin{cases}
+ * d + (1+d)({a(x-c)^p} \over {(h^p + |(x-c)^p|)} - d) &\mbox{for } {a(x-c)^p} \over {(h^p + |(x-c)^p|)} <  d \\
+ * d + (1-d)({a(x-c)^p} \over {(h^p + |(x-c)^p|)} - d) &\mbox{for } {a(x-c)^p} \over {(h^p + |(x-c)^p|)} >= d
+ * \end{cases}
+ * \end{equation}
  * 
  * @author dmrust
  * 
