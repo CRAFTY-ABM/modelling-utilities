@@ -4,7 +4,9 @@ package com.moseph.modelutils.fastdata;
 
 import static java.lang.Math.abs;
 
-import java.util.*;
+import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Intended to form a Map-like structure for storing ints, which avoides autoboxing
@@ -180,5 +182,23 @@ public abstract class AbstractNumberMap<T extends Indexed> implements NumberMap<
 		String r = "{ ";
 		for( T t : getKeys() ) r += t + ":" + getDouble(t) + " ";
 		return r + "}";
+	}
+
+	/**
+	 * @param other
+	 * @param format
+	 * @return String representation of the dot product
+	 */
+	public String prettyPrintDotProduct(UnmodifiableNumberMap<T> other, DecimalFormat format) {
+		double value = 0;
+		StringBuffer buffer = new StringBuffer();
+		for (T key : indexes) {
+			buffer.append("\t\t" + key + "> " + format.format(getDouble(key)) + " * "
+					+ format.format(other.getDouble(key)) + " = "
+					+ format.format(getDouble(key) * other.getDouble(key)) + System.getProperty("line.separator"));
+			value += getDouble(key) * other.getDouble(key);
+		}
+		buffer.append("\t\t" + "Product: " + format.format(value));
+		return buffer.toString();
 	}
 }
