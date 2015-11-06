@@ -1,5 +1,7 @@
 package com.moseph.modelutils.fastdata;
 
+
+import java.text.DecimalFormat;
 import java.util.Map;
 
 public interface UnmodifiableNumberMap<T extends Indexed>
@@ -19,6 +21,8 @@ public interface UnmodifiableNumberMap<T extends Indexed>
 	public  boolean same( UnmodifiableNumberMap<T> other );
 	public  boolean same( UnmodifiableNumberMap<T> other, double threshold );
 	public String prettyPrint();
+
+	public String prettyPrintDotProduct(UnmodifiableNumberMap<T> other, DecimalFormat format);
 	
 	public double DEFAULT_THRESHOLD = 0.0000001;
 }

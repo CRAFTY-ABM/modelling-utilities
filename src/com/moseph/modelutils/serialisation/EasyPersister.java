@@ -484,20 +484,21 @@ public class EasyPersister extends Persister {
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		CsvReader reader = getCSVReader(csvFile, extra);
 
-		if (reader.get(values) == null || reader.get(values).length() == 0) {
+		List<String> headers = Arrays.asList(reader.getHeaders());
+		if (!headers.contains(values)) {
+			// <- LOGGING
+			log.warn("CSV file (" + csvFile + ") does not contain keys column '" + keys + "'!");
+			// LOGGING ->
+		}
+
+		if (!headers.contains(values)) {
 			// <- LOGGING
 			log.warn("CSV file (" + csvFile + ") does not contain values column '" + values + "'!");
 			// LOGGING ->
 		}
 
 		while (reader.readRecord()) {
-			if (reader.get(keys) != null && reader.get(keys).length() > 0) {
-				map.put(reader.get(keys), reader.get(values) + "");
-				} else {
-					// <- LOGGING
-				log.warn("CSV file (" + csvFile + ") does not contain keys column '" + keys + "'!");
-					// LOGGING ->
-			}
+			map.put(reader.get(keys), reader.get(values) + "");
 		}
 		return map;
 	}
