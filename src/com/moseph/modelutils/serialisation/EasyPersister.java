@@ -742,13 +742,14 @@ public class EasyPersister extends Persister {
 			if (!rowNames.contains(row)) {
 				log.warn("Unknown row (" + row + ") in " + csvFile + " at line " + reader.getCurrentRecord()
 						+ ". Known rows: " + rowNames);
-			}
-			S r = rows.forName(row);
-			rowNames.remove(row);
-			for (T col : columns) {
-				String s = reader.get(col.getName());
-				if (s != null && s.length() > 0) {
-					ret.put(col, r, Double.parseDouble(s));
+			} else {
+				S r = rows.forName(row);
+				rowNames.remove(row);
+				for (T col : columns) {
+					String s = reader.get(col.getName());
+					if (s != null && s.length() > 0) {
+						ret.put(col, r, Double.parseDouble(s));
+					}
 				}
 			}
 		}
@@ -779,12 +780,13 @@ public class EasyPersister extends Persister {
 			if (!rowNames.contains(row)) {
 				log.warn("Unknown row in " + csvFile + " at line "
 						+ reader.getCurrentRecord());
-			}
-			T r = rows.forName(row);
-			rowNames.remove(row);
-			String s = reader.get(column);
-			if (s != null && s.length() > 0) {
-				map.put(r, Double.parseDouble(s));
+			} else {
+				T r = rows.forName(row);
+				rowNames.remove(row);
+				String s = reader.get(column);
+				if (s != null && s.length() > 0) {
+					map.put(r, Double.parseDouble(s));
+				}
 			}
 		}
 		if (rowNames.size() > 0) {
