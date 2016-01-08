@@ -500,6 +500,7 @@ public class EasyPersister extends Persister {
 		while (reader.readRecord()) {
 			map.put(reader.get(keys), reader.get(values) + "");
 		}
+		reader.close();
 		return map;
 	}
 
@@ -588,6 +589,7 @@ public class EasyPersister extends Persister {
 				}
 			}
 		}
+		reader.close();
 		return map;
 	}
 
@@ -636,6 +638,7 @@ public class EasyPersister extends Persister {
 				map.get(s).addPoint(year, Double.parseDouble(reader.get(s)));
 			}
 		}
+		reader.close();
 		return map;
 	}
 
@@ -701,6 +704,7 @@ public class EasyPersister extends Persister {
 			}
 			map.put(name, bi);
 		}
+		reader.close();
 		return map;
 	}
 
@@ -753,6 +757,7 @@ public class EasyPersister extends Persister {
 				}
 			}
 		}
+		reader.close();
 		if (rowNames.size() > 0) {
 			log.warn("Didn't find all rows in " + csvFile + ". Missing: "
 					+ rowNames);
@@ -789,6 +794,7 @@ public class EasyPersister extends Persister {
 				}
 			}
 		}
+		reader.close();
 		if (rowNames.size() > 0) {
 			log.warn("Didn't find all rows in " + csvFile + ". Missing: "
 					+ rowNames);

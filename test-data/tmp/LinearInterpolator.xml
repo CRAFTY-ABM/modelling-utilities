@@ -1,0 +1,6 @@
+<linearInterpolator>
+   <breakpoint position="-1.7976931348623157E308" level="0.0"/>
+   <breakpoint position="-1.0E-15" level="0.0"/>
+   <breakpoint position="0.0" level="3.0"/>
+   <breakpoint position="1.0E10" level="5.000000003E9"/>
+</linearInterpolator>
