@@ -23,6 +23,7 @@
 package com.moseph.modelutils.distribution;
 
 import org.simpleframework.xml.Attribute;
+
 import cern.jet.random.Uniform;
 import de.cesr.uranus.core.UranusRandomService;
 
@@ -31,6 +32,8 @@ public class UniformDistribution implements Distribution {
 	double min = 0;
 	@Attribute(required = false)
 	double max = 1;
+
+	boolean initialised = false;
 
 	UranusRandomService rService = null;
 	Uniform uniform;
@@ -53,5 +56,14 @@ public class UniformDistribution implements Distribution {
 		this.rService = rService;
 		this.uniform = rService.getNewUniformDistribution(rService
 				.getGenerator(generatorName));
+		this.initialised = true;
+	}
+
+	/**
+	 * @see com.moseph.modelutils.distribution.Distribution#isInitialised()
+	 */
+	@Override
+	public boolean isInitialised() {
+		return this.initialised;
 	}
 }

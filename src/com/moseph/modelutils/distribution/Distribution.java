@@ -37,4 +37,6 @@ public interface Distribution
 	public double sample();
 
 	public void init(UranusRandomService rService, String generatorName);
+
+	public boolean isInitialised();
 }

@@ -35,6 +35,8 @@ public class NormalDistribution implements Distribution
 	@Attribute(required=false)
 	double sd = 1;
 
+	boolean initialised = false;
+
 	UranusRandomService rService;
 	Normal normal;
 
@@ -61,5 +63,14 @@ public class NormalDistribution implements Distribution
 		this.rService = rService;
 		this.normal = this.rService.createNormal(mean, sd,
 				rService.getGenerator(generatorName));
+		this.initialised = true;
+	}
+
+	/**
+	 * @see com.moseph.modelutils.distribution.Distribution#isInitialised()
+	 */
+	@Override
+	public boolean isInitialised() {
+		return this.initialised;
 	}
 }

@@ -43,4 +43,12 @@ public class ConstantDistribution implements Distribution {
 	public void init(UranusRandomService rService, String generatorName) {
 		// nothing to do
 	}
+
+	/**
+	 * @see com.moseph.modelutils.distribution.Distribution#isInitialised()
+	 */
+	@Override
+	public boolean isInitialised() {
+		return true;
+	}
 }
