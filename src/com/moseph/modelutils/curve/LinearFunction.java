@@ -11,19 +11,23 @@ import org.simpleframework.xml.Attribute;
  */
 public class LinearFunction implements Curve
 {
-	//The ending value
-	@Attribute( required=true )
+	/**
+	 * Intercept. Default: 0
+	 */
+	@Attribute(required = false)
 	double a = 0;
-	//The starting value (defaults to 0)
-	@Attribute( required=true)
-	double b = 0;
+
+	/**
+	 * Slope. Default: 1
+	 */
+	@Attribute(required = false)
+	double b = 1;
 	
 	/**
-	 * Simplest constructor. Give it a maximum value, a growth rate and a time of
-	 * max growth, and it'll give you a curve
-	 * @param K
-	 * @param B
-	 * @param M
+	 * @param a
+	 *        intercept
+	 * @param b
+	 *        slope
 	 */
 	public LinearFunction( 
 			@Attribute(name="a")double a, 
@@ -49,5 +53,9 @@ public class LinearFunction implements Curve
 
 	public void setB(double b) {
 		this.b = b;
+	}
+
+	public LinearFunction getDeepCopy(double addToA, double addToB) {
+		return new LinearFunction(this.a + addToA, this.b + addToB);
 	}
 }
