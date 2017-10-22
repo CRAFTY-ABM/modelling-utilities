@@ -485,7 +485,7 @@ public class EasyPersister extends Persister {
 		CsvReader reader = getCSVReader(csvFile, extra);
 
 		List<String> headers = Arrays.asList(reader.getHeaders());
-		if (!headers.contains(values)) {
+		if (!headers.contains(keys)) {
 			// <- LOGGING
 			log.warn("CSV file (" + csvFile + ") does not contain keys column '" + keys + "'!");
 			// LOGGING ->

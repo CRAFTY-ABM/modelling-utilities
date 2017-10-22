@@ -87,4 +87,13 @@ public class SigmoidFunction implements Curve
 		}
 		return f;
 	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "Sigmoid: " + this.A + "*(x-" + this.C + ")^" + this.P + "/(" + this.H + "^" + this.P + " + abs((x-"
+		        + this.C + ")^" + this.P + ")) + " + this.D + " (" + (this.normalise ? "normalise" : "not nromalise")
+		        + ")";
+	}
 }
