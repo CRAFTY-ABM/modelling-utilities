@@ -38,6 +38,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.sun.org.slf4j.internal.Logger;
 
 import de.cesr.uranus.core.UranusRandomService;
 
@@ -381,8 +384,11 @@ public class Utilities {
 	 * A simple interface for something which gets a numeric value from a
 	 * certain type of object
 	 * 
-	 * @author dmrust
+	 * It's the bottle neck when had large number of cells. 
+	 * Parallelised by ABS 2.1.2021  
 	 * 
+	 * @author dmrust
+	 * @author abs 
 	 * @param <T>
 	 */
 	public static interface Score<T> {
@@ -391,10 +397,21 @@ public class Utilities {
 
 	public static <T> Map<T, Double> scoreMap(Collection<T> items,
 			Score<T> score) {
-		Map<T, Double> map = new LinkedHashMap<T, Double>();
-		for (T t : items) {
-			map.put(t, score.getScore(t));
-		}
+//		Map<T, Double> map = new LinkedHashMap<T, Double>();
+//		
+//		for (T t : items) { // for-loop version
+//			map.put(t, score.getScore(t));
+//		}
+//		
+//		items.forEach(t-> map.put(t, score.getScore(t))); // for each version 
+  
+		Map<T, Double> map = items.parallelStream().collect(Collectors.toMap(t->t,
+				t -> (score.getScore(t)), 
+				(e1, e2) -> e1, LinkedHashMap::new)); // parallelised stream
+		// Reference: 
+		// https://dkbalachandar.wordpress.com/2017/04/03/java-8-create-linkedhashmap-with-collectors-tomap/
+						
+ 		
 		return map;
 	}
 
