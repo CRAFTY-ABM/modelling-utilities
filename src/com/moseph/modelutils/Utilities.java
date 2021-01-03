@@ -1,4 +1,4 @@
- /**
+/**
  * This file is part of
  * 
  * ModellingUtilities
@@ -360,23 +360,50 @@ public class Utilities {
 	public static <T> Set<T> sampleN(Collection<T> input, int toSample,
 			UranusRandomService rService, String generatorName) {
 		Set<T> ret = new LinkedHashSet<T>(toSample);
-		if (toSample >= input.size()) {
+
+		int nLeft = input.size();
+
+		if (toSample >= nLeft) {
 			ret.addAll(input);
 			return ret;
 		}
-		int nLeft = input.size();
-		Iterator<T> it = input.iterator();
-		int toSampleVary = toSample;
-		while (toSampleVary > 0 && it.hasNext()) {
-			T cur = it.next();
+ 
+		//		Iterator<T> it = input.iterator();
+		//		int toSampleVary = toSample;
+		//		while (toSampleVary > 0 && it.hasNext()) {
+		//			T cur = it.next();
+		//			//			// -1 as it's inclusive
+		//			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
+		//			if (rand < toSampleVary) {
+		//				ret.add(cur);
+		//				toSampleVary--;
+		//			}
+		//			nLeft--;
+		//		}
+
+		// avoid hasNext() and next() 
+		// Reference: https://www.javamex.com/tutorials/random_numbers/random_sample.shtml
+		int toSampleVary = Math.min(toSample, input.size());
+		int i=0;
+
+		// Object[] arr = input.toArray();  // slower?
+		// List<T> ls = new ArrayList<T> (input); // faster?
+		List<T> ls = input.stream().collect(Collectors.toList());
+ 
+		while (toSampleVary > 0) {
 			// -1 as it's inclusive
 			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
 			if (rand < toSampleVary) {
-				ret.add(cur);
-				toSampleVary--;
+
+				// ret.add((T) arr[i]); // array version 
+				ret.add((T) ls.get(i)); // list version
+  				toSampleVary--;
+
 			}
 			nLeft--;
+			i++;
 		}
+
 		return ret;
 	}
 
@@ -397,21 +424,22 @@ public class Utilities {
 
 	public static <T> Map<T, Double> scoreMap(Collection<T> items,
 			Score<T> score) {
-//		Map<T, Double> map = new LinkedHashMap<T, Double>();
-//		
-//		for (T t : items) { // for-loop version
-//			map.put(t, score.getScore(t));
-//		}
-//		
-//		items.forEach(t-> map.put(t, score.getScore(t))); // for each version 
-  
+		//		Map<T, Double> map = new LinkedHashMap<T, Double>();
+		//		
+		//		for (T t : items) { // for-loop version
+		//			map.put(t, score.getScore(t));
+		//		}
+		//		
+		//		Map<T, Double> map = new LinkedHashMap<T, Double>();
+		//		items.forEach(t-> map.put(t, score.getScore(t))); // for each version 
+
 		Map<T, Double> map = items.parallelStream().collect(Collectors.toMap(t->t,
 				t -> (score.getScore(t)), 
 				(e1, e2) -> e1, LinkedHashMap::new)); // parallelised stream
 		// Reference: 
 		// https://dkbalachandar.wordpress.com/2017/04/03/java-8-create-linkedhashmap-with-collectors-tomap/
-						
- 		
+
+
 		return map;
 	}
 
@@ -650,7 +678,7 @@ public class Utilities {
 		Method setSeed = null;
 
 		public RepastRandomHelper() throws ClassNotFoundException,
-				SecurityException, NoSuchMethodException {
+		SecurityException, NoSuchMethodException {
 			Class<?> clazz = Class
 					.forName("repast.simphony.random.RandomHelper");
 			dblFrom = clazz.getDeclaredMethod("nextDoubleFromTo", Double.TYPE,
