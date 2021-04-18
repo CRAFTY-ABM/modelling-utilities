@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 {
-	double[] data;
+	public double[] data;
 	double initial = 0;
 	double total;
 
@@ -90,7 +90,10 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 	public void put( T key, double value )
 	{
 		data[key.getIndex()] = value;
-		dirty();
+		dirtyTotal = true;
+		dirtyAverage = true;
+		dirtyMaxMin = true;
+//		dirty();
 	}
 	
 	public void put( double[] values )
@@ -99,6 +102,11 @@ public class DoubleMap<T extends Indexed> extends AbstractNumberMap<T>
 			throw new RuntimeException("Wrong length array passed to DoubleMap. Got " + values.length + " expected " + data.length);
 		}
 		System.arraycopy( values, 0, data, 0, data.length );
+		
+		// dirty(); // I guess..? (ABS in Apr 2021)
+		dirtyTotal = true;
+		dirtyAverage = true;
+		dirtyMaxMin = true;
 	}
 	
 	public void increment( T key )

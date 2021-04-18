@@ -40,7 +40,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.sun.org.slf4j.internal.Logger;
+//import com.sun.org.slf4j.internal.Logger;
 
 import de.cesr.uranus.core.UranusRandomService;
 
@@ -352,6 +352,9 @@ public class Utilities {
 	 * from a list. Alternate formulation to sampleN( Collection, number ) as it
 	 * avoids copying the input.
 	 * 
+	 * 
+	 * Warning: when input.size() == toSample, it returns the input collection with the same order.
+	 *   
 	 * @param <T>
 	 * @param input
 	 * @param toSample
@@ -367,42 +370,42 @@ public class Utilities {
 			ret.addAll(input);
 			return ret;
 		}
- 
-		//		Iterator<T> it = input.iterator();
-		//		int toSampleVary = toSample;
-		//		while (toSampleVary > 0 && it.hasNext()) {
-		//			T cur = it.next();
-		//			//			// -1 as it's inclusive
-		//			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
-		//			if (rand < toSampleVary) {
-		//				ret.add(cur);
-		//				toSampleVary--;
-		//			}
-		//			nLeft--;
-		//		}
 
-		// avoid hasNext() and next() 
-		// Reference: https://www.javamex.com/tutorials/random_numbers/random_sample.shtml
-		int toSampleVary = Math.min(toSample, input.size());
-		int i=0;
-
-		// Object[] arr = input.toArray();  // slower?
-		// List<T> ls = new ArrayList<T> (input); // faster?
-		List<T> ls = input.stream().collect(Collectors.toList());
- 
-		while (toSampleVary > 0) {
+		Iterator<T> it = input.iterator();
+		int toSampleVary = toSample;
+		while (toSampleVary > 0 && it.hasNext()) {
+			T cur = it.next();
 			// -1 as it's inclusive
 			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
 			if (rand < toSampleVary) {
-
-				// ret.add((T) arr[i]); // array version 
-				ret.add((T) ls.get(i)); // list version
-  				toSampleVary--;
-
+				ret.add(cur);
+				toSampleVary--;
 			}
 			nLeft--;
-			i++;
 		}
+
+		//		// avoid hasNext() and next() 
+		//		// Reference: https://www.javamex.com/tutorials/random_numbers/random_sample.shtml
+		//		int toSampleVary = Math.min(toSample, input.size());
+		//		int i=0;
+		//
+		//		// Object[] arr = input.toArray();  // slower?
+		//		List<T> ls = new ArrayList<T> (input); // faster?
+		//		// 	List<T> ls = input.stream().collect(Collectors.toList());
+		//
+		//		while (toSampleVary > 0) {
+		//			// -1 as it's inclusive
+		//			int rand = nextIntFromTo(0, nLeft - 1, rService, generatorName);
+		//			if (rand < toSampleVary) {
+		//
+		//				// ret.add((T) arr[i]); // array version 
+		//				ret.add((T) ls.get(i)); // list version
+		//				toSampleVary--;
+		//
+		//			}
+		//			nLeft--;
+		//			i++;
+		//		}
 
 		return ret;
 	}
@@ -410,35 +413,36 @@ public class Utilities {
 	/**
 	 * A simple interface for something which gets a numeric value from a
 	 * certain type of object
-	 * 
-	 * It's the bottle neck when had large number of cells. 
-	 * Parallelised by ABS 2.1.2021  
-	 * 
+	 *	
 	 * @author dmrust
-	 * @author abs 
 	 * @param <T>
 	 */
 	public static interface Score<T> {
 		public double getScore(T t);
 	}
 
+	/* 
+	 * scoreMap() was being the bottle neck when had large number of cells. 
+	 * Parallelisation using pararallelStream() (02.01.2021)  
+	 * @author abs 
+	 */
 	public static <T> Map<T, Double> scoreMap(Collection<T> items,
 			Score<T> score) {
-		//		Map<T, Double> map = new LinkedHashMap<T, Double>();
-		//		
-		//		for (T t : items) { // for-loop version
-		//			map.put(t, score.getScore(t));
-		//		}
-		//		
+		//	  	Map<T, Double> map = new LinkedHashMap<T, Double>();
+		//				
+		//	  	for (T t : items) { // for-loop version
+		//	  		map.put(t, score.getScore(t));
+		//	  	}
+
 		//		Map<T, Double> map = new LinkedHashMap<T, Double>();
 		//		items.forEach(t-> map.put(t, score.getScore(t))); // for each version 
 
 		Map<T, Double> map = items.parallelStream().collect(Collectors.toMap(t->t,
 				t -> (score.getScore(t)), 
 				(e1, e2) -> e1, LinkedHashMap::new)); // parallelised stream
+
 		// Reference: 
 		// https://dkbalachandar.wordpress.com/2017/04/03/java-8-create-linkedhashmap-with-collectors-tomap/
-
 
 		return map;
 	}

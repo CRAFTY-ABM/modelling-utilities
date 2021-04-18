@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class DoubleMatrix<T extends Indexed, S extends Indexed>
 {
-	double[][] data;
+	public double[][] data;
 	int numRows;
 	int numCols;
 	IndexSet<T> colIndexes;
